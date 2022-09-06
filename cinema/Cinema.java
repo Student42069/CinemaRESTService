@@ -1,12 +1,13 @@
 package cinema;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Cinema {
 
     private int total_rows;
     private int total_columns;
-     List<Seat> available_seats = new ArrayList<>();
+    private  List<Seat> available_seats = new ArrayList<>();
 
     public Cinema(int rows, int columns) {
         this.total_rows = rows;
@@ -35,7 +36,12 @@ public class Cinema {
         this.total_rows = total_rows;
     }
 
-    public List<Seat> getAvailable_seats() {
+    public List<Seat> available_seats() {
         return available_seats;
+    }
+
+    public List<Seat> getAvailable_seats() {
+        return available_seats.stream()
+                .filter(p -> !p.purchased).collect(Collectors.toList());
     }
 }
