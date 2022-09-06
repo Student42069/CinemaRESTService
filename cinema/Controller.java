@@ -1,10 +1,9 @@
 package cinema;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class Controller {
@@ -20,12 +19,14 @@ public class Controller {
     }
 
     @PostMapping("/purchase")
-    public Seat buySeat(@RequestBody Seat seat) {
+    public Receipt buySeat(@RequestBody Seat seat) {
         for(Seat seats: this.cinema.available_seats()) {
             if (seats.getRow() == seat.getRow() && seats.getColumn() == seat.getColumn()) {
-                if (!seats.purchased) {
-                    seats.purchased = true;
-                    return seats;
+                if (!seats.isPurchased()) {
+                    seats.setPurchased(true);
+                    Receipt receipt = new Receipt(seats);
+                    this.cinema.addReceipt(receipt);
+                    return receipt;
                 }
                 throw new SeatUnavailableException(
                         "The ticket has been already purchased!");
@@ -33,6 +34,17 @@ public class Controller {
         }
         throw new SeatUnavailableException(
                 "The number of a row or a column is out of bounds!");
+    }
+
+    @PostMapping("/return")
+    @JsonIgnoreProperties("fieldname")
+    public Refund returnTicket(@RequestBody Return receipt) {
+        for(Receipt purchasedTicket: this.cinema.getPurchasedTickets()){
+            if(purchasedTicket.getToken().equals(receipt.getToken())){
+                return new Refund(purchasedTicket.getTicket());
+            }
+        }
+        throw new SeatUnavailableException("Wrong token!");
     }
 
     @ExceptionHandler(SeatUnavailableException.class)

@@ -1,4 +1,6 @@
 package cinema;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -8,6 +10,8 @@ public class Cinema {
     private int total_rows;
     private int total_columns;
     private  List<Seat> available_seats = new ArrayList<>();
+    @JsonIgnore
+    private List<Receipt> purchasedTickets = new ArrayList<>();
 
     public Cinema(int rows, int columns) {
         this.total_rows = rows;
@@ -42,6 +46,14 @@ public class Cinema {
 
     public List<Seat> getAvailable_seats() {
         return available_seats.stream()
-                .filter(p -> !p.purchased).collect(Collectors.toList());
+                .filter(p -> !p.isPurchased()).collect(Collectors.toList());
+    }
+
+    public void addReceipt(Receipt receipt) {
+        this.purchasedTickets.add(receipt);
+    }
+
+    public List<Receipt> getPurchasedTickets() {
+        return this.purchasedTickets;
     }
 }

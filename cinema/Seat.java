@@ -1,9 +1,12 @@
 package cinema;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Seat {
     private int row;
     private int column;
-    boolean purchased = false;
+    @JsonIgnore
+    private boolean purchased = false;
 
     public Seat(int row, int column) {
         this.row = row;
@@ -33,10 +36,14 @@ public class Seat {
     }
 
     public int getPrice() {
-        if (this.row <= 4) {
-            return 10;
-        } else {
-            return 8;
-        }
+        return this.row <= 4 ? 10 : 8;
+    }
+
+    public boolean isPurchased() {
+        return purchased;
+    }
+
+    public void setPurchased(boolean purchased) {
+        this.purchased = purchased;
     }
 }
