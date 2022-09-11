@@ -40,7 +40,7 @@ public class Cinema {
         this.total_rows = total_rows;
     }
 
-    public List<Seat> available_seats() {
+    public List<Seat> allSeats() {
         return available_seats;
     }
 
